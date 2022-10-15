@@ -1,0 +1,379 @@
+
+
+import java.awt.*;
+import java.util.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.*;
+
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+
+class Contact implements Comparable<Contact>, Serializable{
+    String number;
+    String name, email, address;
+    Contact(String number, String name, String email, String address) {
+        this.number = number;
+        this.name = name;
+        this.email = email;
+        this.address = address;
+    }
+    @Override
+    public String toString() {
+        return number + "," + name + "," + email + "," + address;
+    }
+
+    @Override
+    public int compareTo(Contact o) {
+        return name.toLowerCase().compareTo(o.name.toLowerCase());
+    }
+}
+
+@SuppressWarnings("serial")
+public class AddressBook implements ActionListener {
+  //  private static final ObjectInputStream EOF = null;
+	JButton Add;
+    JButton Delete;
+    JButton ALLContacts;
+    JLabel searchbar;
+    JButton SEARCH;
+    AddressBook s;
+    JTextField Sbar;
+    JFrame f1;
+    JFrame f2;
+    JTextField t5;
+    JTextField t1;
+    JTextField t2;
+    JTextField t3;
+    JTextField t4;
+  TreeSet<Contact> contacts=new TreeSet<>();
+    File file=new File("A:\\ex.txt");
+    ObjectOutputStream fileWrite=null;
+    AddressBook d;
+    ObjectInputStream fileRead=null;
+   
+  
+    // JLabel ADD,DELETE,ALLCONTACTS;
+    public static void main(String args[]) throws Exception {
+        AddressBook b = new AddressBook();
+       // deserialization c=new deserialization();
+        b.gui();
+             
+    }
+ 
+
+    public void gui() {
+
+        f1 = new JFrame("AddressBook");
+        f1.getContentPane().setBackground(Color.decode("#800080"));
+        Add = new JButton("ADD");
+        Delete = new JButton("DELETE");
+        ALLContacts = new JButton("ALLCONTACTS");
+        Add.setBounds(20, 20, 140, 20);
+        Delete.setBounds(180, 20, 140, 20);
+        ALLContacts.setBounds(340, 20, 140, 20);
+        searchbar=new JLabel("SEARCH HERE:");
+        searchbar.setBounds(25,145,250,50);
+        searchbar.setFont(new Font("Cursive",Font.PLAIN,14));
+        searchbar.setForeground(Color.decode("#ffa500"));
+        Sbar = new JTextField();
+        Sbar.setBounds(150, 152, 200, 30);
+       // Sbar.setColumns(15);
+        // Sbar.setVisible(true);
+        SEARCH=new JButton("search");
+        SEARCH.setBounds(150,200,250,25);
+        SEARCH.setForeground(Color.red);
+       Image icon = Toolkit.getDefaultToolkit().getImage("A:logo.png");    
+        f1.setIconImage(icon);
+        ImageIcon ii = new ImageIcon("A:lens.png");
+
+        // adjust size of image icon
+        Image img = ii.getImage();
+        Image new_ii = img.getScaledInstance(35, 35,  java.awt.Image.SCALE_SMOOTH);
+        ii = new ImageIcon(new_ii);
+      
+        f1.add(Add);
+        f1.add(Delete);
+        f1.add(ALLContacts);
+        f1.add(searchbar);
+        f1.add(Sbar);
+        f1.add(SEARCH);
+        Add.addActionListener(this);
+        Delete.addActionListener(this);
+        ALLContacts.addActionListener(this);
+        SEARCH.addActionListener(this);
+        f1.setLayout(null);
+        f1.setSize(500, 500);
+        f1.setVisible(true);
+        f1.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+    }
+
+    @SuppressWarnings({ "unchecked", "deprecation" })
+	@Override
+    public void actionPerformed(ActionEvent e) {
+    	Object obj = e.getSource();
+        
+    	//search logic
+        if(SEARCH == obj) {
+            try {
+                fileRead = new ObjectInputStream(new FileInputStream(file));
+                contacts = (TreeSet<Contact>) fileRead.readObject();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            String s = Sbar.getText();
+            Iterator<Contact> it = contacts.iterator();
+            boolean found = false;
+            while(it.hasNext()) {
+                Contact c = it.next();
+                if(c.name.equalsIgnoreCase(s)) {
+                    String message = "Name : "+ c.name+"\nPh no. : " + c.number+ "\nEmail : " + c.email+"\nAddress : " + c.address;
+                    JOptionPane.showMessageDialog(f1, message, "Contact", 0);
+                    found = true;
+                    break;
+                }
+            }
+            if(!found) {
+                JOptionPane.showMessageDialog(f1, "Contact Does not Exist...!", "Contact", 0);
+            }
+        }
+    		
+    	
+    	//add frame logic
+        if (Add == obj) {
+           
+             f2 = new JFrame("ADD CONTACT");
+            f2.getContentPane().setBackground(Color.decode("#C0C0C0"));
+            f2.setLocation(200, 200);
+            JLabel l1 = new JLabel("Enter Name:");
+            l1.setBounds(25, 100, 100, 30);
+            f2.add(l1);
+            JLabel l2 = new JLabel("Enter Phone Number");
+            l2.setBounds(25, 150, 150, 30);
+            f2.add(l2);
+            JLabel l3 = new JLabel("Enter Email");
+            l3.setBounds(25, 200, 100, 30);
+            f2.add(l3);
+            JLabel l4 = new JLabel("Enter Address");
+            l4.setBounds(25, 250, 100, 30);
+            f2.add(l4);
+
+            t1 = new JTextField();
+            t1.setBounds(150, 100, 150, 30);
+            f2.add(t1);
+            t2 = new JTextField();
+            t2.setBounds(150, 150, 150, 30);
+            f2.add(t2);
+            t3 = new JTextField();
+            t3.setBounds(150, 200, 150, 30);
+            f2.add(t3);
+            t4 = new JTextField();
+            t4.setBounds(150, 250, 150, 30);
+            f2.add(t4);
+            f2.setLayout(null);
+            f2.setVisible(true);
+            f2.setSize(500, 500);
+            JButton save = new JButton("SAVE");
+            f2.add(save);
+            save.setBounds(100, 350, 80, 25);
+            save.setBackground(Color.GREEN);
+            save.setForeground(Color.BLACK);
+            save.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    if(t1.getText().length()==0 || t2.getText().length()==0) {
+                        JOptionPane.showMessageDialog(f2, "Enter name and Phone number", "ADD CONTACT", 0);
+                    }
+                    else if (t2.getText().length()!=10) {
+                        JOptionPane.showMessageDialog(f2, "Enter 10 Digit number", "Contact", 0);
+                    }
+                    else {
+                        String name = t1.getText();
+                        String number = t2.getText();
+                        String email = t3.getText();
+                        String address = t4.getText();
+
+                        // try to write the remaining logic...
+                        contacts.add(new Contact(number, name, email, address));                        
+
+                        try {
+                            fileWrite = new ObjectOutputStream(new FileOutputStream(file));
+                            fileWrite.writeObject(contacts);
+                            JOptionPane.showMessageDialog(f2, "Successfully added", "ADD CONTACT", 0);
+                            fileWrite.close();
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                        }
+                        f2.dispose();
+                    }
+                }
+            });
+            // JOptionPane.showMessageDialog(null, "CONTACT SAVED");
+        } 
+        //delete form
+        
+        
+        else if (obj == Delete) {
+            JFrame f3 = new JFrame("DELETE CONTACT");
+            f3.getContentPane().setBackground(Color.decode("#33FF99"));
+            f3.setLocation(400, 100);
+            JLabel delete = new JLabel("ENTER NAME OR PHONE NUMBER TO BE DELETED");
+            delete.setBounds(105, 130, 300, 40);
+            f3.add(delete);
+            delete.setVisible(true);
+             t5 = new JTextField();
+            t5.setBounds(150, 200, 150, 30);
+            f3.add(t5);
+            JButton del = new JButton("DELETE");
+            f3.add(del);
+            del.setBounds(180, 300, 100, 25);
+            del.setBackground(Color.RED);
+            del.setForeground(Color.orange);
+            f3.setLayout(null);
+            f3.setVisible(true);
+            f3.setSize(500, 500);
+            del.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    String s = t5.getText();
+                    if(file.isFile()) {
+                        try {
+                            fileRead = new ObjectInputStream(new FileInputStream(file));
+                            contacts = (TreeSet<Contact>) fileRead.readObject();
+                            fileRead.close();
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                        Iterator<Contact> it = contacts.iterator();
+                        boolean found = false;
+                        while(it.hasNext()) {
+                            Contact c = it.next();
+                            if(s.toLowerCase().equals(c.name.toLowerCase(Locale.ROOT))||c.number.equals(s)) {
+                                it.remove();
+                                found = true;
+                                break;
+                            }
+                        }
+                        if(found) {
+                            JOptionPane.showMessageDialog(f2, "Successfully deleted.", "DELETE CONTACT", JOptionPane.ERROR_MESSAGE);
+                            try {
+                                fileWrite = new ObjectOutputStream(new FileOutputStream(file));
+                                fileWrite.writeObject(contacts);
+                                fileWrite.close();
+                            } catch (IOException ex) {
+                                ex.printStackTrace();
+                            }
+                        }
+                        else if(t5.getText().isEmpty())
+                        {
+                        	JOptionPane.showMessageDialog(f2, "FIELD SHOULD NOT BE EMPTY", "DELETE CONTACT", JOptionPane.ERROR_MESSAGE);
+                        }
+                        
+                        else {
+                        	
+                            JOptionPane.showMessageDialog(f2, "Contact does not exist.", "DELETE CONTACT", JOptionPane.ERROR_MESSAGE);
+                        	}                
+                    }
+                }
+            });
+      
+        }
+        else if(ALLContacts == obj){
+        	new deserialization().desearial();
+            JFrame f = new JFrame("All Contacts");
+            f2.getContentPane().setBackground(Color.decode("#cc0066"));
+            ImageIcon ii = new ImageIcon("A:logo.png");
+
+            // adjust size of image icon
+            Image img = ii.getImage();
+            Image new_ii = img.getScaledInstance(35, 35,  java.awt.Image.SCALE_SMOOTH);
+            ii = new ImageIcon(new_ii);
+            JLabel l = new JLabel("List of all contacts", ii, SwingConstants.CENTER);
+            // Loading contents of file into table
+            String[][] data = null;
+   
+            
+            
+            
+            if(file.isFile()){
+                try{
+                    fileRead = new ObjectInputStream(new FileInputStream(file));
+                    contacts = (TreeSet<Contact>) fileRead.readObject();
+                    data = new String[contacts.size()][4];
+                    Iterator<Contact> it = contacts.iterator();
+                    int x = 0;
+                    while (it.hasNext()){
+                        Contact c = it.next();
+                        data[x][0] = c.name;
+                        data[x][1] = c.number;
+                        data[x][2] = c.email;
+                        data[x][3] = c.address;
+                        x += 1;
+                    }
+                }catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+            String[] colname = {"Name", "Phone No.", "Email ID", "Address"};
+            DefaultTableModel model = new DefaultTableModel(data, colname){
+
+                @Override
+                public boolean isCellEditable(int row, int column) {
+                    //all cells false
+                    return false;
+                }
+            };
+            JTable table = new JTable(model);
+
+            f.add(l);
+            f.add(new JScrollPane(table));
+
+            // frame standard setting
+            f.setLayout(new FlowLayout());
+            f.setSize(600, 600);
+            f.setVisible(true);
+           f.show();
+        }
+        
+
+
+    
+    
+}
+    
+    class deserialization
+    {
+   @SuppressWarnings("unused")
+void desearial()
+    {
+	   try
+	   {
+		   //ObjectOutputStream  fo=new ObjectOutputStream(new FileOutputStream("A:\\testing.txt"));
+		   
+    ObjectInputStream fileReader=new ObjectInputStream(new FileInputStream("A:\\ex.txt"));
+    File f3=new File("A:\\testing.txt");
+    PrintWriter pr=new PrintWriter(f3);
+     contacts=(TreeSet<Contact>)fileReader.readObject();
+    //String t=d.name+d.number+d.address+d.email;
+     Iterator<Contact> it=contacts.iterator();
+     while(it.hasNext())
+     {
+    	 Contact d=(Contact) it.next();
+    	String t=d.name+","+d.number+","+d.address+","+d.email;
+    	 pr.println(t);
+     }
+
+	
+	
+	fileReader.close();
+	 pr.close();
+	
+    
+    }
+	   catch(Exception e)
+	   {
+		   e.printStackTrace();
+	   }
+   }
+    }
+//    deserialization d1=new deserialization();
+    }
